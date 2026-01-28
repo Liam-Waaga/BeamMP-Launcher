@@ -6,9 +6,8 @@ The launcher is the way we communitcate to outside the game, it does a few autom
 This is a fork of [BeamMP-Launcher](https://github.com/BeamMP/BeamMP-Launcher). This fork is intended to add linux features which aren't present upstream. It may still work on windows, however linux is the primary focus.
 
 ## [Getting started](https://docs.beammp.com/game/getting-started/)
-
-## Differences to Getting Started
 Make sure you have the submodules populated. If not, run `git submodule init && git submodule update`
+0. Read the BeamMP getting started page, but keep the following in mind.
 1. Run `./vcpkg/bootstrap-vcpkg.sh -disableMetrics` (add additional flags to suit your needs).
 2. Run `cmake . -B build -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux -G Ninja`.
 3. Run <code>cmake --build build -j &#96;nproc&#96;</code>
@@ -31,4 +30,5 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
