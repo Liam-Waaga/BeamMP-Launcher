@@ -24,6 +24,7 @@ struct Options {
     int game_arguments_length = 0;
     const char** argv = nullptr;
     int argc = 0;
+    std::string game_path = "";
 };
 
 void InitOptions(int argc, const char *argv[], Options &options);
