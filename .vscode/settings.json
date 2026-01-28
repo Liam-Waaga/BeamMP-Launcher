@@ -1,0 +1,10 @@
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=/home/user/clone/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "-DVCPKG_TARGET_TRIPLET=x64-linux"
+    ],
+    "cmake.configureEnvironment": {
+        "PATH": "/home/user/clone/vcpkg:/home/user/.local/bin:/home/user/.config/emacs/bin:/home/user/.cargo/bin:/home/user/.local/share/gem/ruby/3.3.0/bin:/home/user/Documents/clone/vcpkg:/home/user/.local/bin:/home/user/.config/emacs/bin:/home/user/.cargo/bin:/home/user/.local/share/gem/ruby/3.3.0/bin:/home/user/.local/share/zinit/polaris/bin:/home/user/Documents/clone/vcpkg:/home/user/.local/bin:/home/user/.config/emacs/bin:/home/user/.cargo/bin:/home/user/.local/share/gem/ruby/3.3.0/bin:/home/user/Documents/clone/vcpkg:/home/user/.local/bin:/home/user/.config/emacs/bin:/home/user/.cargo/bin:/home/user/.local/share/gem/ruby/3.3.0/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/bin:/usr/lib/llvm/21/bin:/usr/lib/llvm/20/bin:/etc/eselect/wine/bin:/usr/lib64/opencascade/bin",
+        "CMAKE_PREFIX_PATH": ""
+    }
+}

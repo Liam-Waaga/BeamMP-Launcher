@@ -40,7 +40,8 @@ beammp_fs_string GetGameDir() {
 #if defined(_WIN32)
     return GameDir.substr(0, GameDir.find_last_of('\\'));
 #elif defined(__linux__)
-    return GameDir.substr(0, GameDir.find_last_of('/'));
+    // return GameDir.substr(0, GameDir.find_last_of('/')); /* why? */
+    return GameDir;
 #endif
 }
 #ifdef _WIN32
