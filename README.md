@@ -1,6 +1,9 @@
 # BeamMP-Launcher
-
 The launcher is the way we communitcate to outside the game, it does a few automated actions such as but not limited to: downloading the mod, launching the game, and create a connection to a server.
+
+
+## This is a fork
+This is a fork. I am maintaining repo this so I get features I want to add. The original repo is at https://github.com/BeamMP/BeamMP-Launcher
 
 ## [Getting started](https://docs.beammp.com/game/getting-started/)
 
