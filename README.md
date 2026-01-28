@@ -11,7 +11,7 @@ This is a fork of [BeamMP-Launcher](https://github.com/BeamMP/BeamMP-Launcher). 
 Make sure you have the submodules populated. If not, run `git submodule init && git submodule update`
 1. Run `./vcpkg/bootstrap-vcpkg.sh -disableMetrics` (add additional flags to suit your needs).
 2. Run `cmake . -B build -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux -G Ninja`.
-3. Run ```cmake --build build -j `nproc` ```
+3. Run <code>cmake --build build -j &#96;nproc&#96;</code>
 4. Run `build/BeamMP-Launcher --help` to find which flags you want. Some reccomendations are `--no-launch` if running BeamNG through proton/wine, `--user-path <path>` for the same thing, and `--game-path <path>` if the game is in a different directory than provided by steam (ex. if it is in a library on another drive).
 
 ## License
@@ -31,3 +31,4 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
