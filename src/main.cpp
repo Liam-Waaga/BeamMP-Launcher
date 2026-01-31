@@ -51,7 +51,10 @@ int main(int argc, const char** argv) try {
         LegitimacyCheck();
     } catch (std::exception& e) {
         error("Failure in LegitimacyCheck: " + std::string(e.what()));
-        throw;
+        error("Continue at your own risk (ctrl+c to stop)");
+        if (std::cin.get() == EOF) {
+            throw;
+        }
     }
 
     try {

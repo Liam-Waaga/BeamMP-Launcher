@@ -13,9 +13,9 @@
 
 void InitLauncher();
 beammp_fs_string GetEP(const beammp_fs_char* P = nullptr);
-std::filesystem::path GetBP(const beammp_fs_char* P = nullptr);
+std::filesystem::path GetExecutablePath(const beammp_fs_char* P = nullptr);
 std::filesystem::path GetGamePath();
 std::string GetVer();
 std::string GetPatch();
-beammp_fs_string GetEN();
+beammp_fs_string GetExpectedExecutableName();
 void ConfigInit();

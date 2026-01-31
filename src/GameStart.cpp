@@ -122,12 +122,12 @@ std::filesystem::path GetGamePath() {
     struct passwd* pw = getpwuid(getuid());
     std::string homeDir = pw->pw_dir;
 
-    std::string Path = "";
+    std::string Path = std::string("");
 
     if (options.user_path == nullptr) {
         Path = homeDir + "/.local/share/BeamNG/BeamNG.drive/";
     } else {
-        Path = options.user_path;
+        Path = std::string(options.user_path);
     }
 
     std::string Ver = CheckVer(GetGameDir());

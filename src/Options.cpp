@@ -89,12 +89,14 @@ void InitOptions(int argc, const char *argv[], Options &options) {
         } else if (argument == "--user-path") {
             if (i + 1 >= argc) {
                 error("You must specify a path after the `--user-path` argument");
+                return;
             }
             options.user_path = argv[i + 1];
             i++;
         } else if (argument == "--game-path") {
             if (i + 1 >= argc) {
                 error("You must specify a path after the `--game-path` argument");
+                return;
             }
             options.game_path = argv[i + 1];
             i++;

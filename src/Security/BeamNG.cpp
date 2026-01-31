@@ -259,6 +259,19 @@ void LegitimacyCheck() {
         }
     }
 
+    if (options.game_path != "") {
+        if (std::filesystem::exists(options.game_path)) {
+            if (std::filesystem::exists(std::filesystem::path(options.game_path) / "integrity.json")) {
+                GameDir = options.game_path;
+                return;
+            } else {
+                error("Folder found but not valid game path, searching...");
+            }
+        } else {
+            error("Folder not found for given game path, searching...");
+        }
+    }
+
     if (!steamappsFolderFound) {
         error("Unsupported Steam installation.");
         return;
@@ -274,11 +287,6 @@ void LegitimacyCheck() {
         if (std::filesystem::exists(folderInfo.second->attribs["path"] + "/steamapps/common/BeamNG.drive/integrity.json")){
             GameDir = folderInfo.second->attribs["path"] + "/steamapps/common/BeamNG.drive/";
             break;
-        }
-    }
-    if (options.game_path != "") {
-        if (std::filesystem::exists(options.game_path)) {
-            GameDir = options.game_path;
         }
     }
     if (GameDir.empty()) {

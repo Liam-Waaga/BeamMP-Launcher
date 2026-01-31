@@ -10,6 +10,7 @@
 #include <cstring>
 #include <httplib.h>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 #include <string>
 #if defined(_WIN32)
 #elif defined(__linux__)
@@ -75,7 +76,8 @@ Version::Version(const std::array<uint8_t, 3>& v)
     : Version(v[0], v[1], v[2]) {
 }
 
-beammp_fs_string GetEN() {
+/* GetExpectedName? */
+beammp_fs_string GetExpectedExecutableName() {
 #if defined(_WIN32)
     return L"BeamMP-Launcher.exe";
 #elif defined(__linux__)
@@ -90,15 +92,22 @@ std::string GetPatch() {
     return ".0";
 }
 
-beammp_fs_string GetEP(const beammp_fs_char* P) {
-    static beammp_fs_string Ret = [&]() {
-        beammp_fs_string path(P);
-        return path.substr(0, path.find_last_of(beammp_wide("\\/")) + 1);
-    }();
-    return Ret;
+/* GetExpectedPath?, */
+beammp_fs_string GetEP(const beammp_fs_char* path) {
+    beammp_fs_string str_path;
+    
+    /* nullptr goodness */
+    if (path) {
+        str_path = beammp_fs_string(path);
+    } else {
+        str_path = beammp_fs_string("");
+    }
+    return str_path.substr(0, str_path.find_last_of(beammp_wide("\\/")) + 1);
 }
 
-fs::path GetBP(const beammp_fs_char* P) {
+/* GetBasePath? */
+/* I believe this functions gets the base path of the executable, and if it can't, then it gets the base path of the provided path */
+fs::path GetExecutablePath(const beammp_fs_char* P) {
     fs::path fspath = {};
 #if defined(_WIN32)
     beammp_fs_char path[256];
@@ -114,8 +123,11 @@ fs::path GetBP(const beammp_fs_char* P) {
     // should instead be placed in Application Support.
     proc_pidpath(pid, path, sizeof(path));
     fspath = std::string(path);
- #else
-    fspath = beammp_fs_string(P);
+#else
+    if (P)
+        fspath = beammp_fs_string(P);
+    else
+        fspath = beammp_fs_string("");
 #endif
     fspath = fs::weakly_canonical(fspath.string() + "/..");
 #if defined(_WIN32)
@@ -159,7 +171,7 @@ void ReLaunch() {
     }
     info("Relaunch!");
     system("clear");
-    int ret = execv((GetBP() / GetEN()).c_str(), const_cast<char**>(options.argv));
+    int ret = execv((GetExecutablePath() / GetExpectedExecutableName()).c_str(), const_cast<char**>(options.argv));
     if (ret < 0) {
         error(std::string("execv() failed with: ") + strerror(errno) + ". Failed to relaunch");
         exit(1);
@@ -168,7 +180,7 @@ void ReLaunch() {
     exit(1);
 }
 void URelaunch() {
-    int ret = execv((GetBP() / GetEN()).c_str(), const_cast<char**>(options.argv));
+    int ret = execv((GetExecutablePath() / GetExpectedExecutableName()).c_str(), const_cast<char**>(options.argv));
     if (ret < 0) {
         error(std::string("execv() failed with: ") + strerror(errno) + ". Failed to relaunch");
         exit(1);
@@ -178,21 +190,26 @@ void URelaunch() {
 }
 #endif
 
-void CheckName() {
-#if defined(_WIN32)
-    std::wstring DN = GetEN(), CDir = Utils::ToWString(options.executable_name), FN = CDir.substr(CDir.find_last_of('\\') + 1);
-#elif defined(__linux__)
-    std::string DN = GetEN(), CDir = options.executable_name, FN = CDir.substr(CDir.find_last_of('/') + 1);
-#endif
-    if (FN != DN) {
-        if (fs::exists(DN))
-            fs::remove(DN.c_str());
-        if (fs::exists(DN))
-            ReLaunch();
-        fs::rename(FN.c_str(), DN.c_str());
-        URelaunch();
-    }
-}
+
+/* I am morally opposed to this code so by-by it is */
+/* also this really serves no purpase I can think of */
+// void CheckName() {
+//     /* DN = default name, CDir = current executable (full path), FN = current executable file name*/
+// #if defined(_WIN32)
+//     std::wstring DN = GetEN(), CDir = Utils::ToWString(options.executable_name), FN = CDir.substr(CDir.find_last_of('\\') + 1);
+// #elif defined(__linux__)
+//     std::string DN = GetEN(), CDir = options.executable_name, FN = CDir.substr(CDir.find_last_of('/') + 1);
+// #endif
+//     if (FN != DN) {
+//         /* don't go around deleting random files please? */
+//         // if (fs::exists(DN))
+//         //     fs::remove(DN.c_str());
+//         if (fs::exists(DN))
+//             ReLaunch();
+//         fs::rename(FN.c_str(), DN.c_str());
+//         URelaunch();
+//     }
+// }
 
 void CheckForUpdates(const std::string& CV) {
     std::string LatestHash = HTTP::Get("https://backend.beammp.com/sha/launcher?branch=" + Branch + "&pk=" + PublicKey);
@@ -200,36 +217,36 @@ void CheckForUpdates(const std::string& CV) {
         "https://backend.beammp.com/version/launcher?branch=" + Branch + "&pk=" + PublicKey);
 
     transform(LatestHash.begin(), LatestHash.end(), LatestHash.begin(), ::tolower);
-    beammp_fs_string BP(GetBP() / GetEN()), Back(GetBP() / beammp_wide("BeamMP-Launcher.back"));
+    beammp_fs_string executable_path(GetExecutablePath() / GetExpectedExecutableName()), old_executable(GetExecutablePath() / beammp_wide("BeamMP-Launcher.back"));
 
-    std::string FileHash = Utils::GetSha256HashReallyFastFile(BP);
+    std::string FileHash = Utils::GetSha256HashReallyFastFile(executable_path);
 
     if (FileHash != LatestHash && IsOutdated(Version(VersionStrToInts(GetVer() + GetPatch())), Version(VersionStrToInts(LatestVersion)))) {
         if (!options.no_update) {
             info("Launcher update " + LatestVersion + " found!");
-#if defined(__linux__)
-            error("Auto update is NOT implemented for the Linux version. Please update manually ASAP as updates contain security patches.");
-#else
+// #if defined(__linux__)
+            // error("Auto update is NOT implemented for the Linux version. Please update manually ASAP as updates contain security patches.");
+// #else
             info("Downloading Launcher update " + LatestHash);
             if (HTTP::Download(
                 "https://backend.beammp.com/builds/launcher?download=true"
                 "&pk="
                     + PublicKey + "&branch=" + Branch,
-                GetBP() / (beammp_wide("new_") + GetEN()), LatestHash)) {
+                GetExecutablePath() / (beammp_wide("new_") + GetExpectedExecutableName()), LatestHash)) {
                 std::error_code ec;
-                fs::remove(Back, ec);
+                fs::remove(old_executable, ec);
                 if (ec == std::errc::permission_denied) {
                     error("Failed to remove old backup file: " + ec.message() + ". Using alternative name.");
-                    fs::rename(BP, Back + beammp_wide(".") + Utils::ToWString(FileHash.substr(0, 8)));
+                    fs::rename(executable_path, old_executable + beammp_wide(".") + Utils::ToWString(FileHash.substr(0, 8)));
                 } else {
-                    fs::rename(BP, Back);
+                    fs::rename(executable_path, old_executable);
                 }
-                fs::rename(GetBP() / (beammp_wide("new_") + GetEN()), BP);
+                fs::rename(GetExecutablePath() / (beammp_wide("new_") + GetExpectedExecutableName()), executable_path);
                 URelaunch();
             } else {
                 throw std::runtime_error("Failed to download the launcher update! Please try manually updating it, https://docs.beammp.com/FAQ/Update-launcher/");
             }
-#endif
+// #endif
         } else {
             warn("Launcher update was found, but not updating because --no-update or --dev was specified.");
         }
@@ -275,7 +292,6 @@ void InitLauncher() {
     SetConsoleOutputCP(CP_UTF8);
     _setmode(_fileno(stdout), _O_U8TEXT);
     debug("Launcher Version : " + GetVer() + GetPatch());
-    CheckName();
     LinuxPatch();
     CheckLocalKey();
     CheckForUpdates(std::string(GetVer()) + GetPatch());
@@ -284,7 +300,6 @@ void InitLauncher() {
 
 void InitLauncher() {
     info("BeamMP Launcher v" + GetVer() + GetPatch());
-    CheckName();
     CheckLocalKey();
     CheckForUpdates(std::string(GetVer()) + GetPatch());
 }
@@ -294,11 +309,19 @@ size_t DirCount(const fs::path& path) {
     return (size_t)std::distance(fs::directory_iterator { path }, fs::directory_iterator {});
 }
 
+/* this is very dangerous! DO NOT GIVE MALFORMED DATA OR BAD THINGS WILL HAPPEN. INCLUDING LOSS OF USER DATA */
 void CheckMP(const beammp_fs_string& Path) {
-    if (!fs::exists(Path))
-        return;
-    size_t c = DirCount(fs::path(Path));
+    
     try {
+        if (!std::filesystem::absolute(Path).string().ends_with("current/mods/multiplayer")) {
+            /* this means that this is going to try and delete random files, so we should probably exit immediately */
+            throw std::runtime_error("Tried to clean a folder that is not of the form we expected");
+        }
+
+
+        if (!fs::exists(Path))
+            return;
+        size_t c = DirCount(fs::path(Path));
         for (auto& p : fs::directory_iterator(Path)) {
             if (p.exists() && !p.is_directory()) {
                 std::string Name = p.path().filename().string();

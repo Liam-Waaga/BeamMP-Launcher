@@ -10,6 +10,8 @@ endif(WIN32)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS on)
+
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 add_compile_definitions(CPPHTTPLIB_OPENSSL_SUPPORT)
@@ -38,3 +40,4 @@ elseif(WIN32) #MINGW
     target_link_libraries(${PROJECT_NAME} ssl crypto ws2_32 ssp crypt32 z CURL::libcurl)
 endif(WIN32)
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
+
