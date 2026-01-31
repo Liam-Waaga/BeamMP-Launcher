@@ -69,5 +69,6 @@ int main(int argc, const char** argv) try {
     error(std::string("Exception in main(): ") + e.what());
     info("Closing in 5 seconds");
     info("If this keeps happening, contact us on either: Forum: https://forum.beammp.com, Discord: https://discord.gg/beammp");
+    info("THIS IS A FORK. Please make an issue at https://github.com/Liam-Waaga/BeamMP-Launcher first and/or try the upstream launcher before bugging the original devs");
     std::this_thread::sleep_for(std::chrono::seconds(5));
 }
