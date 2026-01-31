@@ -146,7 +146,7 @@ void ReLaunch() {
     }
     info("Relaunch!");
     system("cls");
-    ShellExecuteW(nullptr, L"runas", (GetBP() / GetEN()).c_str(), Arg.c_str(), nullptr, SW_SHOWNORMAL);
+    ShellExecuteW(nullptr, L"runas", (GetExecutablePath() / GetExpectedExecutableName()).c_str(), Arg.c_str(), nullptr, SW_SHOWNORMAL);
     ShowWindow(GetConsoleWindow(), 0);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     exit(1);
@@ -157,7 +157,7 @@ void URelaunch() {
         Arg += Utils::ToWString(options.argv[c - 1]);
         Arg += L" ";
     }
-    ShellExecuteW(nullptr, L"open", (GetBP() / GetEN()).c_str(), Arg.c_str(), nullptr, SW_SHOWNORMAL);
+    ShellExecuteW(nullptr, L"open", (GetExecutablePath() / GetExpectedExecutableName()).c_str(), Arg.c_str(), nullptr, SW_SHOWNORMAL);
     ShowWindow(GetConsoleWindow(), 0);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     exit(1);
