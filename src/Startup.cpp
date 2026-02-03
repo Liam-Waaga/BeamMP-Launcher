@@ -94,7 +94,7 @@ std::string GetPatch() {
 
 /* GetExpectedPath?, */
 beammp_fs_string GetEP(const beammp_fs_char* path) {
-    beammp_fs_string str_path(path);
+    beammp_fs_string str_path(path == nullptr ? "" : path);
     return str_path.substr(0, str_path.find_last_of(beammp_wide("\\/")) + 1);
 }
 
